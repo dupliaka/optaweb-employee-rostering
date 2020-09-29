@@ -15,11 +15,11 @@
   <name>OptaWeb Employee Rostering as a Service Standalone</name>
 
   <properties>
-    <application.port>8180</application.port>
+    <application.port>8080</application.port>
     <frontend.project.name>optaweb-employee-rostering-frontend</frontend.project.name>
     <version.cypress.docker>4.12.1</version.cypress.docker>
     <!-- Override to run with Podman -->
-    <container.runtime>docker</container.runtime>
+    <container.runtime>podman</container.runtime>
   </properties>
 
   <dependencies>
@@ -118,7 +118,7 @@
               <artifactId>process-exec-maven-plugin</artifactId>
               <version>0.9</version>
               <configuration>
-              <skip>${skipITs}</skip>
+                <skip>${skipITs}</skip>
               </configuration>
             </plugin>
           </plugins>
@@ -136,9 +136,6 @@
                 </goals>
                 <configuration>
                   <name>Run application</name>
-                  <healthcheckUrl>http://localhost:${application.port}</healthcheckUrl>
-                  <workingDir>${project.build.directory}</workingDir>
-                  <processLogFile>${project.build.directory}/${project.artifactId}.log</processLogFile>
                   <arguments>
                     <argument>java</argument>
                     <argument>-Dserver.port=${application.port}</argument>
@@ -164,6 +161,21 @@
             <groupId>org.codehaus.mojo</groupId>
             <executions>
               <execution>
+                <id>run-standalone</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>${container.runtime}-compose</executable>
+                  <arguments>
+                    <argument>run</argument>
+                    <argument>--rm</argument>
+                    <argument>erp_standalone</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
                 <id>run-cypress-tests</id>
                 <phase>integration-test</phase>
                 <goals>
@@ -171,22 +183,39 @@
                 </goals>
                 <configuration>
                   <skip>${skipITs}</skip>
-                  <executable>${container.runtime}</executable>
+                  <!--                  Do not fail the whole build if tests are failing -->
+                  <successCodes>
+                    <successCode>0</successCode>
+                    <successCode>1</successCode>
+                    <successCode>2</successCode>
+                  </successCodes>
+                  <executable>${container.runtime}-compose</executable>
                   <arguments>
+                    <argument>-f</argument>
+                    <argument>../docker-compose.yml</argument>
                     <argument>run</argument>
-                    <argument>--network=host</argument> <!-- Cypress accesses UI running on the host -->
-                    <argument>-v</argument>
-                    <argument>${project.parent.basedir}/${frontend.project.name}:/e2e:Z</argument>
-                    <argument>-w</argument>
-                    <argument>/e2e</argument>
-                    <argument>--entrypoint</argument>
+                    <argument>--rm</argument>
                     <argument>cypress</argument>
-                    <argument>cypress/included:${version.cypress.docker}</argument>
-                    <argument>run</argument> <!-- Executing cypress:run -->
-                    <argument>--project</argument>
-                    <argument>.</argument>
-                    <argument>--config</argument>
-                    <argument>baseUrl=http://localhost:${application.port}</argument>
+                    <argument>./wait-for-it.sh</argument>
+                    <argument>localhost:${application.port}</argument>
+                    <argument>--</argument>
+                    <argument>cypress</argument>
+                    <argument>run</argument>
+                    <argument>--browser</argument>
+                    <argument>chrome</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>stop-standalone</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>${container.runtime}-compose</executable>
+                  <arguments>
+                    <argument>stop</argument>
                   </arguments>
                 </configuration>
               </execution>

@@ -1,0 +1,22 @@
+version: '3.4'
+services:
+  web:
+    build:
+      context: "./optaweb-employee-rostering-standalone"
+      dockerfile: Dockerfile
+    container_name: erp
+    ports:
+      - "8080:8080"
+  cypress:
+    container_name: cypress
+    #https://github:com/cypress-io/cypress-docker-images/tree/master/included:
+    image: "cypress/included:5.2.0"
+    depends_on:
+      - erp_standalone
+    entrypoint: ["./wait-for-it.sh", "localhost:8080", "--", "cypress", "run","--browser", "chrome"]
+    environment:
+      - CYPRESS_baseUrl=http://localhost:8080
+    network_mode: "host"
+    working_dir: /e2e/optaweb-employee-rostering-frontend
+    volumes:
+      - ./:/e2e:Z

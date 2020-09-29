@@ -10,5 +10,4 @@ RUN envsubst '${BACKEND_URL}' < /tmp/default.template > /etc/nginx/conf.d/defaul
         && chmod g=u /var/cache/nginx/ \
         && chgrp 0 /var/run/ \
         && chmod g=u /var/run/
-COPY build /usr/share/nginx/html
 EXPOSE 8080
