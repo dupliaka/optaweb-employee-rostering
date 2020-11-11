@@ -1,0 +1,9 @@
+<settings>
+  <mirrors>
+    <mirror>
+      <id>mirror-central</id>
+      <mirrorOf>external:*,!kie-wb-m2-repo</mirrorOf>
+      <url>http://bxms-qe.rhev-ci-vms.eng.rdu2.redhat.com:8081/nexus/content/groups/public-pnc/</url>
+    </mirror>
+  </mirrors>
+</settings>
