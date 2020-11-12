@@ -31,40 +31,7 @@ pipeline {
         }
         stage('Build Optaweb Employee Rostering') {
             steps {
-                mavenCleanInstall('optaweb-employee-rostering', false, ['run-code-coverage', 'integration-tests'])
-            }
-        }
-        stage('Analyze Optaweb Employee Rostering by SonarCloud') {
-            steps {
-                withCredentials([string(credentialsId: 'SONARCLOUD_TOKEN', variable: 'SONARCLOUD_TOKEN')]) {
-                    runMaven('validate', 'optaweb-employee-rostering', true, ['sonarcloud-analysis'], '-e -nsu')
-                }
-            }
-        }
-    }
-    post {
-        always {
-            sh '$WORKSPACE/trace.sh'
-            junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
-
-            echo 'Archiving screenshots and videos ...'
-            archiveArtifacts artifacts: '**/cypress/screenshots/**, **/cypress/videos/**'
-
-            cleanWs()
-        }
-        failure {
-            script {
-                mailer.sendEmail_failedPR()
-            }
-        }
-        unstable {
-            script {
-                mailer.sendEmail_unstablePR()
-            }
-        }
-        fixed {
-            script {
-                mailer.sendEmail_fixedPR()
+                mavenCleanInstall('optaweb-employee-rostering', true, ['integration-tests'])
             }
         }
     }
