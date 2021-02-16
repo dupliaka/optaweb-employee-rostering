@@ -199,6 +199,7 @@
                     <argument>run</argument>
                     <argument>--config</argument>
                     <argument>baseUrl=http://localhost:${application.port}</argument>
+                    <argument>> /dev/null 2>&amp;1 &amp;</argument>
                   </arguments>
                 </configuration>
               </execution>
