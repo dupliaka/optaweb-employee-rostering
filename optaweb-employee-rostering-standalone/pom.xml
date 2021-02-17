@@ -186,6 +186,7 @@
                   <executable>${container.runtime}</executable>
                   <arguments>
                     <argument>run</argument>
+                    <argument>--rm</argument>
                     <argument>--network=host</argument> <!-- Cypress accesses UI running on the host -->
                     <argument>-v</argument>
                     <argument>${project.parent.basedir}/${frontend.project.name}:/e2e:Z</argument>
@@ -199,7 +200,6 @@
                     <argument>run</argument>
                     <argument>--config</argument>
                     <argument>baseUrl=http://localhost:${application.port}</argument>
-                    <argument>> /dev/null 2>&amp;1 &amp;</argument>
                   </arguments>
                 </configuration>
               </execution>
