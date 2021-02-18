@@ -188,6 +188,7 @@
                     <argument>run</argument>
                     <argument>--rm</argument>
                     <argument>--network=host</argument> <!-- Cypress accesses UI running on the host -->
+                    <argument>--user $(id -u):$(id -g)</argument>
                     <argument>-v</argument>
                     <argument>${project.parent.basedir}/${frontend.project.name}:/e2e:Z</argument>
                     <argument>-w</argument>
