@@ -185,14 +185,14 @@
                   <skip>${skipITs}</skip>
                   <executable>${container.runtime}</executable>
                   <arguments>
-                    <argument>--user</argument>
-                    <argument>1000:1000</argument>
                     <argument>run</argument>
                     <argument>--network=host</argument> <!-- Cypress accesses UI running on the host -->
                     <argument>-v</argument>
                     <argument>${project.parent.basedir}/${frontend.project.name}:/e2e:Z</argument>
                     <argument>-w</argument>
                     <argument>/e2e</argument>
+                    <argument>--user</argument>
+                    <argument>1000:1000</argument>
                     <argument>--entrypoint</argument>
                     <argument>node</argument>
                     <argument>cypress/included:${version.cypress.docker}</argument>
